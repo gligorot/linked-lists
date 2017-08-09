@@ -3,10 +3,8 @@
 
 class LinkedList
 
-
-
   def initialize
-    #rules are not clear whether these two is allowed/needed or not
+    #rules are not clear whether these two are allowed/needed or not
     @head = nil
     @tail = nil
 
@@ -39,7 +37,8 @@ class LinkedList
 
   end
 
-  def prepend #add a new node at start
+  #add a new node at start
+  def prepend
     new_node = Node.new
 
     if @head.nil?
@@ -52,16 +51,14 @@ class LinkedList
     end
   end
 
-  def size #return size (number of nodes)
+  #return size (number of nodes)
+  def size
     if head.nil?
       return 0
-    elsif head.next_node == @tail
-      return 1
-    else
-      count = 0
-      #something along the lines of while X.next_node != nil count += 1 where X is every next node from head
+    else #or just this below
+      count = 1 # remember, array with indexes 0,1,2,3 is size 4 !
       x = @head
-      until x.next_node.nil?
+      until x.nil? #took out x.next_node.nil?, check later
         count += 1
         x = x.next_node
       end
@@ -70,42 +67,101 @@ class LinkedList
     end
   end
 
-  def head #aka first node
+  #aka first node
+  def head
     return @head
   end
 
-  def tail  #aka last  node
+  #aka last  node
+  def tail
     return @tail
   end
 
-  def at(index) #return node at given index (?)
+  #return node at given index (?)
+  #can be done with size too, same shit
+  def at(index)
     count = 0
 
     x = @head
     while true #possible work here later
       if count == index
-        return x
+        return x #problem alert
         return
       end
       count += 1
-      x = x.next_node
 
       if x.next_node.nil?
         print "A node at the given index doesn't exist"
         return
+      else
+        x = x.next_node
       end
     end
   end
 
-  def pop #remove last node
-    #MAKE A TRAVERSE FUNCTION <3
-  end
-  def contains?(value); end #check if value is in the list, return true, else false
-  def find(data); end #returns the index of the node whose data(value) matches the given, else nil
-  def to_s; end #prints the list elements as strings, format ( data ) -> ( data ) -> ( data ) -> nil
-  #extra credit
-  def insert_at(index); end #adds node at the given index
-  def remove_at(index); end #removes node at the given index
-end
+  #remove last node (and make the one before it tail)
+  def pop
+    node_count = self.size
 
+    @tail = self.at(node_count-2) #-2 because of how size works
+    @tail.next_node = nil
+  end
+
+  #check if value is in the list, return true, else false
+  def contains?(given_value)
+    self.traverse_list do |node|
+      if node.value == given_value
+        return true
+      else
+        return false
+      end
+    end
+  end
+
+  end
+
+  #returns the index of the node whose data(value valjda?) matches the given, else nil
+  def find(data)
+    #note-there may be a way to extract the count value from traverse_list
+    #so I don't need to make a new index counter, but I don't know it
+    index = 0
+    self.traverse_list do |node|
+      return index if node.value == data
+      index += 1
+    end
+  end
+
+  #prints the list elements as strings, format ( data ) -> ( data ) -> ( data ) -> nil
+  def to_s
+    self.traverse_list do |node|
+      print "( #{node.data} ) -> "
+    end
+    print "nil" #because of how traverse_list works this has to be this way
+  end
+
+  #extra credit
+  #adds node at the given index
+  def insert_at(index)
+    prev = self.at(index) #idk how to call this....
+    post = self.at(index+1)
+
+
+  end
+  def remove_at(index); end #removes node at the given index
+
+  #extra function for convenience
+
+  #go through the list, start to finish (works with a block)
+  def traverse_list
+    return self unless block_given?
+    count = 0 #technically not needed because i don't know how to "extract" it for outside-of-function-use
+    x = @head
+    until x.nil?
+      count += 1
+      yield x
+      x = x.next_node
+    end
+  end
+
+end
 list = LinkedList.new
